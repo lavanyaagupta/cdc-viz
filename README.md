@@ -1,3 +1,6 @@
 # cdc-viz
 
 This project is county-level dashboard that identifies where chronic disease burden is highest relative to primary care access.
+
+# The Question
+While the presentation of raw prevalence in most public health dashboards, what we really need to address here is where is need the highest and where is access the lowest at the same time? A county with a high disease burden but good provider coverage is a very different problem than a country with the same burden and no providers. To address the question at hand, this project combines two federal datasets: CDC PLACES and HRSA Health Professional Shortage Areas. I am computing a Burden-Access Gap Score, which is each county's disease burden percentile minus its healthcare access percentile. I expect that counties with the highest gap scores are the ones carrying the most disease burden with the least capacity to treat it.

@@ -15,9 +15,14 @@ health-access-dashboard/
 ├── data/
 │   ├── generate_sample_data.py   # synthetic data matching real schema (for testing)
 │   ├── data_pipeline.py          # load, merge, compute gap score
-│   ├── places_sample.csv        
-│   └── hrsa_sample.csv           
+│   ├── places_sample.csv         # sample data (swap for real PLACES export)
+│   └── hrsa_sample.csv           # sample data (swap for real HRSA export)
 ├── app/
 │   └── app.py                    # Streamlit dashboard
 ├── requirements.txt
 └── README.md
+
+# To Run Locally
+pip install -r requirements.txt
+python data/generate_sample_data.py
+streamlit run app/app.py

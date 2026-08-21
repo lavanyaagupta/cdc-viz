@@ -2,7 +2,7 @@
 # Deploy free: push repo to GitHib -> streamlit.io/cloud -> point at app/app.py
 
 import sys
-import pathlib import Path
+from pathlib import Path
 
 import pandas as pd
 import plotly.express as px

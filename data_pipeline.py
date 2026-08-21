@@ -6,8 +6,8 @@ high gap score means that disease burden is high and access is poor realtive to 
 import pandas as pd
 
 # file location
-places_path = "data/places_sample.csv"
-hrsa_path = "data/hrsa_sample.csv"
+places_path = r"C:\Users\lavan\Downloads\places_sample.csv"
+hrsa_path = r"C:\Users\lavan\Downloads\hrsa_sample.csv"
 use_sample_schema = True #set false when using real places/hrsa column names
 
 conditions_columns_sample = ["Diabetes_pct", "Obestity_pct", "Coronary Heart Disease_pct", "Asthma_pct", "High Blood Pressure_pct", "Depression_pct"]

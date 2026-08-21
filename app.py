@@ -1,76 +1,91 @@
-# To run locally: streamlit run app/app.py
-# Deploy free: push repo to GitHib -> streamlit.io/cloud -> point at app/app.py
-
-import sys
-from pathlib import Path
+"""
+app.py — Healthcare Access vs. Chronic Disease Burden Dashboard
+Run locally: streamlit run app.py
+"""
 
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from data.data_pipeline import build_merged_dataset
+from data_pipeline import build_merged_dataset
 
 st.set_page_config(page_title="Healthcare Access vs. Disease Burden", layout="wide")
+
 st.title("Healthcare Access vs. Chronic Disease Burden")
-st.caption("Which counties carry the highest chronic disease burden relative to the ir"
-           "access to primary care? Built on CDC PLACES + HRSA HPSA data.")
+st.caption(
+    "Which counties carry the highest chronic disease burden relative to their "
+    "access to primary care? Built on CDC PLACES + HRSA HPSA data."
+)
+
 
 @st.cache_data
 def load_data():
-  return build_merged_data()
+    return build_merged_dataset()
+
 
 df = load_data()
 
-# sidebar filters
+# Sidebar filters
 st.sidebar.header("Filters")
 states = st.sidebar.multiselect(
-  "State", options=sorted(df["state"].unique()), default=sorted(df["state"].unique()))
+    "State", options=sorted(df["state"].unique()), default=sorted(df["state"].unique())
+)
 min_gap, max_gap = st.sidebar.slider(
-  "Gap score range", float(df["gap_score"].min()), float(df["gap_score"].max()),
-  (float(df["gap_score"].min()), float(df["gap_score"].max())),)
+    "Gap score range", float(df["gap_score"].min()), float(df["gap_score"].max()),
+    (float(df["gap_score"].min()), float(df["gap_score"].max())),
+)
 
 filtered = df[
-  df["state"].isin(states)
-  & df["gap_score"].between(min_gap, max_gap)
+    df["state"].isin(states)
+    & df["gap_score"].between(min_gap, max_gap)
 ]
 
-# top line metrics
+# Top-line metrics
 col1, col2, col3 = st.columns(3)
 col1.metric("Counties shown", len(filtered))
 col2.metric("Avg. disease burden index", f"{filtered['disease_burden_index'].mean():.1f}%")
-col3.metric("Avg. HPSA  shortage score", f"{filtered['hpsa_score'].mean():.1f}")
+col3.metric("Avg. HPSA shortage score", f"{filtered['hpsa_score'].mean():.1f}")
+
 st.divider()
 
-# scatter: burden vs. access
+# Scatter: burden vs. access
 st.subheader("Burden vs. Access, by County")
-fig_scatter = px.scatter( filtered, x="access_percentile", y="burden_percentile", color="gap_score", color_continuous_scale="RdY1Bu_r", hover_data=["county_name", "state", "disease_buden_index", "hpsa_score"],
-                         labels = {
-                                    "access_percentile": "Access Percentile (higher = better access)",
-                                    "burden_percentile": "Disease Burden Percentile (higher = worse)",
-                                    "gap_score": "Gap Score",
-                         },
-                        )
+fig_scatter = px.scatter(
+    filtered,
+    x="access_percentile",
+    y="burden_percentile",
+    color="gap_score",
+    color_continuous_scale="RdYlBu_r",
+    hover_data=["county_name", "state", "disease_burden_index", "hpsa_score"],
+    labels={
+        "access_percentile": "Access Percentile (higher = better access)",
+        "burden_percentile": "Disease Burden Percentile (higher = worse)",
+        "gap_score": "Gap Score",
+    },
+)
 fig_scatter.update_layout(height=500)
-st.plotly_chart(fig_scatter,use_container_width=True)
-st.caption("Top-left quadrant = highest priority: highest disease burden, low healthcare access.")
+st.plotly_chart(fig_scatter, use_container_width=True)
+st.caption("Top-left quadrant = highest priority: high disease burden, low healthcare access.")
 
-# top underserved counties table
-st.subheader("Most underserved Counties (highest gap score)")
-top_n = st.slider("Show top N counties", 5,30,10)
-st.dataframe(filtered.nlargest(top_n, "gap_score")[
-             ["county_name", "state", "disease_burden_index", "hpsa_score", "designation_type", "gap_score"]
-             ].round(1),
-             use_container_width=True,
-             hide_index=True,)
+# Top underserved counties table
+st.subheader("Most Underserved Counties (highest gap score)")
+top_n = st.slider("Show top N counties", 5, 30, 10)
+st.dataframe(
+    filtered.nlargest(top_n, "gap_score")[
+        ["county_name", "state", "disease_burden_index", "hpsa_score", "designation_type", "gap_score"]
+    ].round(1),
+    use_container_width=True,
+    hide_index=True,
+)
 
-# bar chart by state
+# Bar chart by state
 st.subheader("Average Gap Score by State")
-state_avg = filtered.groupby("state")["gap_score"].mean().sort_values(ascending=False).resert_index()
-fig_bar = px.bar(state_avg, x="state", y="gap_score", color="gap_scpre", color_continuous_scale = "RdY1Bu_r")
+state_avg = filtered.groupby("state")["gap_score"].mean().sort_values(ascending=False).reset_index()
+fig_bar = px.bar(state_avg, x="state", y="gap_score", color="gap_score", color_continuous_scale="RdYlBu_r")
 fig_bar.update_layout(height=400)
 st.plotly_chart(fig_bar, use_container_width=True)
 
 st.divider()
-st.caption("Data: CDC Places + HRSA HPSA (primary care shortage areas). "
-           "Sample data shown until real CSVs")
+st.caption(
+    "Data: CDC PLACES (chronic disease prevalence) + HRSA HPSA (primary care shortage areas)."
+)

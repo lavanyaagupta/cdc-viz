@@ -1,3 +1,6 @@
+# To run locally: streamlit run app/app.py
+# Deploy free: push repo to GitHib -> streamlit.io/cloud -> point at app/app.py
+
 import sys
 import pathlib import Path
 
@@ -19,6 +22,7 @@ def load_data():
 
 df = load_data()
 
+# sidebar filters
 st.sidebar.header("Filters")
 states = st.sidebar.multiselect(
   "State", options=sorted(df["state"].unique()), default=sorted(df["state"].unique()))
@@ -51,6 +55,7 @@ fig_scatter.update_layout(height=500)
 st.plotly_chart(fig_scatter,use_container_width=True)
 st.caption("Top-left quadrant = highest priority: highest disease burden, low healthcare access.")
 
+# top underserved counties table
 st.subheader("Most underserved Counties (highest gap score)")
 top_n = st.slider("Show top N counties", 5,30,10)
 st.dataframe(filtered.nlargest(top_n, "gap_score")[
@@ -59,6 +64,7 @@ st.dataframe(filtered.nlargest(top_n, "gap_score")[
              use_container_width=True,
              hide_index=True,)
 
+# bar chart by state
 st.subheader("Average Gap Score by State")
 state_avg = filtered.groupby("state")["gap_score"].mean().sort_values(ascending=False).resert_index()
 fig_bar = px.bar(state_avg, x="state", y="gap_score", color="gap_scpre", color_continuous_scale = "RdY1Bu_r")

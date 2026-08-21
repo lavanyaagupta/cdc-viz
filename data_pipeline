@@ -1,3 +1,8 @@
+"""
+Loads CDC places and HRSA HPSA, merges them at county level, and computes a burden access gap shortage
+gap_score = disease_burden_percentile - health_access_percentile
+high gap score means that disease burden is high and access is poor realtive to other counties -> these are the counties most underserved relative to their need
+"""
 import pandas as pd
 
 # file location

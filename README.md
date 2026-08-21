@@ -26,3 +26,9 @@ health-access-dashboard/
 pip install -r requirements.txt
 python data/generate_sample_data.py
 streamlit run app/app.py
+
+# Requirements
+streamlit>=1.35
+pandas>=2.0
+plotly>=5.20
+numpy>=1.26

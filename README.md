@@ -32,3 +32,5 @@ streamlit>=1.35
 pandas>=2.0
 plotly>=5.20
 numpy>=1.26
+
+# for my reference https://cdc-viz-nlng6ferqrsl3c3f7cnwcb.streamlit.app/

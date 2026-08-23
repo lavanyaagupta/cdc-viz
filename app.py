@@ -11,6 +11,28 @@ from data_pipeline import build_merged_dataset
 
 st.set_page_config(page_title="Healthcare Access vs. Disease Burden", layout="wide")
 
+st.markdown(
+    """
+    <style>
+    .block-container { padding-top: 2rem; }
+    div[data-testid="stMetric"] {
+        background-color: #F4F1EA;
+        border-radius: 10px;
+        padding: 14px 16px;
+        border: 1px solid #E9E5DA;
+            }
+    div[data-testid="stMetricLabel"] { font-weight: 500; }
+    .insight-box {
+        background-color: #FFF3EC;
+        border-left: 4px solid #E76F51;
+        padding: 14px 18px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 st.title("Healthcare Access vs. Chronic Disease Burden")
 st.caption(
     "Which counties carry the highest chronic disease burden relative to their "
@@ -47,6 +69,25 @@ col2.metric("Avg. disease burden index", f"{filtered['disease_burden_index'].mea
 col3.metric("Avg. HPSA shortage score", f"{filtered['hpsa_score'].mean():.1f}")
 
 st.divider()
+
+# generate insights
+top_county = filtered.iloc[0]
+top_state = filtered.groupby("state")["gap_score"].mean().idmax()
+top_state_avg = filtered.groupby("state")["gap_score"].mean().max()
+
+st.markdown(
+    f"""
+    <div class="insight-box">
+    <b>{top_county['county_name']}, {top_county['state']}</b> has the highest burden-access gap 
+    in the current view — disease burden in the {top_county['burden_percentile']:.0f}th percentile
+    paired with an HPSA shortage score of {top_county['hpsa_score']:.0f}.
+    <br><b>{top_state}</b> has the highest average gap score among filtered states
+    ({top_state_avg:.1f}), suggesting it as a priority region for expanding access.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+st.divider
 
 # Scatter: burden vs. access
 st.subheader("Burden vs. Access, by County")

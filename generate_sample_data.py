@@ -3,19 +3,19 @@ import pandas as pd
 
 np.random.seed(42)
 
-STATES = ["IL", "CA", "TX", "NY", "OH", "GA", "MI", "PA", "NC", "AZ"]
-CONDITIONS = ["Diabetes", "Obesity", "Coronary Heart Disease", "Asthma", "High Blood Pressure", "Depression"]
-N_COUNTIES_PER_STATE = 15
+states = ["IL", "CA", "TX", "NY", "OH", "GA", "MI", "PA", "NC", "AZ"]
+conditions = ["Diabetes", "Obesity", "Coronary Heart Disease", "Asthma", "High Blood Pressure", "Depression"]
+n_counties_per_state = 15
 
 
 def make_county_list():
     rows = []
     fips_counter = 1
-    for state in STATES:
-        for i in range(N_COUNTIES_PER_STATE):
+    for state in states:
+        for i in range(n_counties_per_state):
             rows.append({
                 "state": state,
-                "county_fips": f"{STATES.index(state)+1:02d}{fips_counter:03d}",
+                "county_fips": f"{states.index(state)+1:02d}{fips_counter:03d}",
                 "county_name": f"{state} County {i+1}",
             })
             fips_counter += 1
@@ -26,7 +26,7 @@ def make_places_sample(counties: pd.DataFrame) -> pd.DataFrame:
     df = counties.copy()
     base_rates = {"Diabetes": 11, "Obesity": 33, "Coronary Heart Disease": 6.5,
                   "Asthma": 9.5, "High Blood Pressure": 32, "Depression": 20}
-    for cond in CONDITIONS:
+    for cond in conditions:
         base = base_rates[cond]
         df[f"{cond}_pct"] = np.clip(
             np.random.normal(loc=base, scale=base * 0.25, size=len(df)), 1, 60
